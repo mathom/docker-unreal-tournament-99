@@ -1,11 +1,15 @@
-FROM i386/ubuntu
+from i386/ubuntu
 
-RUN apt-get update && apt-get install bzip2
+RUN apt-get update && apt-get upgrade -y && apt-get install -y bzip2 curl
 
-ADD http://ut-files.com/Entire_Server_Download/ut-server-436.tar.gz /var/tmp
-RUN tar -xzf /var/tmp/ut-server-436.tar.gz -C /opt
-ADD http://www.ut-files.com/Patches/utpgpatch451.tar.bz2 /var/tmp
-RUN tar -xjpf /var/tmp/utpgpatch451.tar.bz2 -C /opt/ut-server
+RUN useradd -ms /bin/bash ut99server
+
+RUN chown ut99server /var/tmp
+RUN chown ut99server /opt
+USER ut99server
+
+RUN curl http://ut-files.com/Entire_Server_Download/ut-server-436.tar.gz | tar xz -C /opt && \
+    curl http://www.ut-files.com/Patches/utpgpatch451.tar.bz2 | tar xjp -C /opt/ut-server
 ADD UnrealTournament.ini /opt/ut-server/System/UnrealTournament.ini
 
 RUN chmod +x /opt/ut-server/ucc
